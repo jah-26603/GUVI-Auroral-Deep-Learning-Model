@@ -28,6 +28,7 @@ from torchvision.transforms import ToTensor
 import os 
 from torch.utils.data import Subset
 from torch import optim # added
+import torchvision.transforms as transforms
 
 
 
@@ -63,10 +64,11 @@ if initial_run:
 
 #%% Train Loop
 
-
+trans = transforms.RandomErasing(value = -10)
 dataset = utils.GUVI_dataset(
     input_dir=os.path.join(fp_pd, 'guvi_paired_data', 'inputs'),
-    image_dir=os.path.join(fp_pd, 'guvi_paired_data', 'images')
+    image_dir=os.path.join(fp_pd, 'guvi_paired_data', 'images'),
+    transforms=trans
 )
 
 subset_indices = list(range(128*50)) 

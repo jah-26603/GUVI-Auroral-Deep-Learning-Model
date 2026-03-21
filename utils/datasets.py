@@ -12,6 +12,7 @@ import torch
 import yaml
 import matplotlib.pyplot as plt
 import cv2
+import torchvision.transforms as transforms
 
 
 #%%
@@ -21,6 +22,7 @@ class GUVI_dataset(Dataset):
     def __init__(self, 
                  input_dir =r'E:\ml_aurora\guvi_paired_data\inputs',
                  image_dir = r'E:\ml_aurora\guvi_paired_data\images',
+                 transforms = None,
                  sw_only = False):
 
         self.input_dir = input_dir
@@ -33,8 +35,10 @@ class GUVI_dataset(Dataset):
         #values determined across entire dataset
         self.input_mean = np.array(stat_dict['data_statistics']['input_mean'])
         self.input_std = np.array(stat_dict['data_statistics']['input_std'])
-        self.image_mean = np.array(stat_dict['data_statistics']['guvi_img_mean'])
-        self.image_std = np.array(stat_dict['data_statistics']['guvi_img_std'])
+        self.image_mean = stat_dict['data_statistics']['all_guvi_img_mean']
+        self.image_std = stat_dict['data_statistics']['all_guvi_img_std']
+        # self.image_max = stat_dict['data_statistics']['guvi_img_max']
+        self.transforms = transforms
         
         if sw_only:
             self.input_mean = self.input_mean[:5]
@@ -55,23 +59,21 @@ class GUVI_dataset(Dataset):
         inputs[mask] = 0 #the outputs will be masked during training
         
         #load and standardize the images, and add hemisphere conditioning to the inputs
-        img = np.load(os.path.join(self.image_dir, self.titles[idx]))
-        if 'south' in self.titles[idx]:
-            # img = (img - self.image_mean[1])/ self.image_std[1]
-            inputs = np.concatenate([inputs, np.array([1]*inputs.shape[1])[None,:]], axis = 0)
-        if 'north' in self.titles[idx]:
-            # img = (img - self.image_mean[0])/ self.image_std[0]
-            inputs = np.concatenate([inputs, np.array([0]*inputs.shape[1])[None,:]], axis = 0)
-
-        # #salt and pepper noise removal? -> this could be hurting the noon sector
-        # mask = np.isnan(img)
-        # img[mask] = 0
-        # img = cv2.medianBlur(img.astype(np.float32), ksize=3)
-        # img[mask] = np.nan
+        img = np.load(os.path.join(self.image_dir, self.titles[idx]))[20:]
+        # img = (np.log(img) - self.image_mean)/ self.image_std
+        # img[img == -np.inf] = np.nan
+        img = (img - self.image_mean)/ self.image_std
         
-        img = np.log1p(img)
 
-        sample = {'image': img, 'inputs': inputs}
+        
+        if 'north' in self.titles[idx]:
+            hemisphere = 0
+        if 'south' in self.titles[idx]:
+            hemisphere = 1
+        
+        
+        mask = np.isnan(img)
+        sample = {'image': img, 'inputs': inputs, 'hemisphere': hemisphere, 'og_nan_mask': mask}
 
         return sample
 

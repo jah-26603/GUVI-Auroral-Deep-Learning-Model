@@ -24,25 +24,20 @@ data_statistics:
               105.18150914004148]
 
 
-  #guvi channels: north/south this order
-  guvi_img_mean: [0.5063050563286956,
-                  0.45693482759431703]
-  guvi_img_std: [1.9052793015828695,
-                 1.781541640658612]
+  #guvi channels: north/south this order. These are calculated after normalization.
 
-  #(Hemisphere)     N = north, S = south 
-  #(Aurora Type)    d = diffuse, m = monoenergetic, b = broadband/wave, i = ion
-  #(Flux Type)      j = energy flux, n = number flux
-  op_channels: [N_dj, N_dn, N_mj, N_mn, N_bj, N_bn, N_ij, N_in, 
-                 S_dj, S_dn, S_mj, S_mn, S_bj, S_bn, S_ij, S_in]
+  #calculated across entire dataset
+  all_guvi_img_mean: 0.475354
+  all_guvi_img_std: 1.72481
+  all_guvi_img_p9999: 46.31985 #99.99%th percentile
 
+  #only takes into consideration nonzero pixels for statistics
+  nonzero_guvi_img_mean: 2.183179
+  nonzero_guvi_img_std: 3.151951
+  nonzero_guvi_img_p9999: 46.319759
 
-  op_img_mean   : [4.04966115e-01, 1.33798393e+08, 2.60717073e-01, 9.42221319e+07,
-                  2.22836225e-01, 1.24794229e+08, 8.07320841e-02, 1.16889021e+07,
-                  3.99593099e-01, 1.03687022e+08, 2.12594895e-01, 7.73934362e+07,
-                  1.93693880e-01, 1.03163046e+08, 9.66737364e-02, 1.22427451e+07]
-
-  op_img_std  : [1.84635469e-01, 9.56115831e+07, 9.16883284e-02, 4.88956931e+07,
-                5.59683269e-02, 5.01348856e+07, 4.78440134e-02, 5.81834082e+06,
-                1.79400519e-01, 7.39405835e+07, 6.60282417e-02, 3.49102211e+07,
-                3.65898266e-02, 3.23072530e+07, 4.77830639e-02, 4.11760903e+06]
+  #only takes into consieration nonzero pixels and log transforms BEFORE calculating the statitiscs. 
+  #These are the statistics of the log transform.
+  log_nonzero_guvi_img_mean: 0.15236633638081307
+  log_nonzero_guvi_img_std: 1.13867
+  log_nonzero_guvi_img_p9999: 3.8355686382792356
